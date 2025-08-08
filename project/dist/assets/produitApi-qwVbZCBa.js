@@ -1,0 +1,1 @@
+import{a as e}from"./axiosInstance-Cz6MWCIH.js";const o="/products",r={getAll:()=>e.get(o),getByCategorie:t=>e.get(`${o}/by-categorie/${t}`),getWithoutBoutique:()=>e.get(`${o}/no-boutique`),getEnRupture:()=>e.get(`${o}/rupture`),create:t=>e.post(o,t),update:(t,u)=>e.put(`${o}/${t}`,u),delete:t=>e.delete(`${o}/${t}`)};export{r as p};

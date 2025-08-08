@@ -1,0 +1,1 @@
+import{e as r}from"./index-yrzGcrsz.js";const c=r.create({baseURL:"http://localhost:8081/api"});c.interceptors.request.use(e=>{const t=localStorage.getItem("user"),s=localStorage.getItem("password");if(t&&s){const o=JSON.parse(t),a=btoa(`${o.email}:${s}`);e.headers.Authorization=`Basic ${a}`}return e},e=>Promise.reject(e));export{c as a};

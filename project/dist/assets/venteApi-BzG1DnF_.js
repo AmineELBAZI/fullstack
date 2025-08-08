@@ -1,0 +1,1 @@
+import{a as t}from"./axiosInstance-Cz6MWCIH.js";const i="/ventes",n={getAll:()=>t.get(i),getById:e=>t.get(`${i}/${e}`),create:e=>t.post(i,e),createMultiple:e=>t.post(`${i}/multiple`,e),update:(e,o)=>t.put(`${i}/${e}`,o),delete:e=>t.delete(`${i}/${e}`),getByPointVente:e=>t.get(`${i}/boutique/${e}`),createProduitFini:e=>t.post(`${i}/produit-fini`,e)};export{n as v};
