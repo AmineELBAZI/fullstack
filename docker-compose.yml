@@ -20,7 +20,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile  # Your Spring Boot Dockerfile (assuming it is in root)
+      dockerfile: ./GMPV/Dockerfile  # Your Spring Boot Dockerfile (assuming it is in root)
     container_name: springboot-gmpv
     depends_on:
       - mysql
@@ -37,7 +37,7 @@ services:
   frontend:
     build:
       context: ./frontend  # Your React app folder with Dockerfile inside
-      dockerfile: Dockerfile
+      dockerfile: ./project/Dockerfile
     container_name: react-gmpv
     depends_on:
       - app
