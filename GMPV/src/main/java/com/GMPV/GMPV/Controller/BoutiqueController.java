@@ -17,7 +17,8 @@ import java.util.Optional;
 @RequestMapping("/api/boutiques")
 @CrossOrigin(origins = {
 	    "http://localhost:3000",
-	    "https://gmpv-frontend-nu.vercel.app"
+	    "https://gmpv-frontend-nu.vercel.app",
+	    "77.237.238.8"
 	})
 public class BoutiqueController {
 

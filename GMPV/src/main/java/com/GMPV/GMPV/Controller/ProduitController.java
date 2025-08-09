@@ -13,7 +13,8 @@ import java.util.List;
 @RequestMapping("/api/products")
 @CrossOrigin(origins = {
 	    "http://localhost:3000",
-	    "https://gmpv-frontend-nu.vercel.app"
+	    "https://gmpv-frontend-nu.vercel.app",
+	    "77.237.238.8"
 	})
 public class ProduitController {
 
