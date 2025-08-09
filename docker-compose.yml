@@ -36,8 +36,8 @@ services:
 
   frontend:
     build:
-      context: ./       # Your React app folder with Dockerfile inside
-      dockerfile: ./project/Dockerfile
+      context: ./project     # Your React app folder with Dockerfile inside
+      dockerfile: Dockerfile
     container_name: react-gmpv
     depends_on:
       - app
