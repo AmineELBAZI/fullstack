@@ -51,6 +51,10 @@ const Produits = () => {
 
     if (categories.length > 0) {
       fetchProduitsParCategorie();
+    } else {
+      // If no categories, clear products
+      setProduitsParCategorie({});
+      setLoadingProduits(false);
     }
   }, [categories]);
 
@@ -121,7 +125,6 @@ const Produits = () => {
     });
   };
 
-
   const handleSubmitProduit = (e) => {
     e.preventDefault();
 
@@ -163,6 +166,11 @@ const Produits = () => {
     );
   }
 
+  // Check if all products lists are empty
+  const allProduitsEmpty = categories.length > 0
+    ? Object.values(produitsParCategorie).every(prods => prods.length === 0)
+    : true;
+
   return (
     <>
       <style>
@@ -196,68 +204,75 @@ const Produits = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Object.entries(produitsParCategorie).map(([categorieNom, produits]) => {
-            const produitsFiltres = produits.filter(p =>
-              p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              p.reference?.toLowerCase().includes(searchTerm.toLowerCase())
-            );
+        {/* Show message if no categories or no products */}
+        {categories.length === 0 ? (
+          <p className="text-center text-gray-500 py-6">Aucune catégorie trouvée.</p>
+        ) : allProduitsEmpty ? (
+          <p className="text-center text-gray-500 py-6">Aucun produit disponible.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Object.entries(produitsParCategorie).map(([categorieNom, produits]) => {
+              const produitsFiltres = produits.filter(p =>
+                p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                p.reference?.toLowerCase().includes(searchTerm.toLowerCase())
+              );
 
-            return (
-              <div key={categorieNom} className="bg-white rounded-xl shadow p-4">
-                <h2
-                  className="text-xl font-bold mb-4 text-blue-700 p-4 rounded-t-md border-b-4 border-blue-500 cursor-pointer"
-                  title={categorieNom}
-                >
-                  {categorieNom}
-                </h2>
-                {produitsFiltres.length === 0 ? (
-                  <p className="text-gray-500 text-sm">Aucun produit trouvé</p>
-                ) : (
-                  <div className="max-h-96 overflow-y-auto pr-1 hide-scrollbar"> {/* Increased height from max-h-56 to max-h-96 */}
-                    {produitsFiltres.map(produit => (
-                      <div
-                        key={produit.id}
-                        className="border-b border-gray-200 pb-4 mb-4 last:mb-0 last:pb-0 last:border-none p-2 cursor-none min-h-[120px] flex flex-col justify-between hover:shadow-lg transition"
-                        onClick={() => handleOpenModalProduit(produit)}
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h3 className="font-semibold text-gray-900">{produit.name}</h3>
-                            <p className="text-sm text-gray-500">Réf: {produit.reference}</p>
+              return (
+                <div key={categorieNom} className="bg-white rounded-xl shadow p-4">
+                  <h2
+                    className="text-xl font-bold mb-4 text-blue-700 p-4 rounded-t-md border-b-4 border-blue-500 cursor-pointer"
+                    title={categorieNom}
+                  >
+                    {categorieNom}
+                  </h2>
+                  {produitsFiltres.length === 0 ? (
+                    <p className="text-gray-500 text-sm">Aucun produit trouvé</p>
+                  ) : (
+                    <div className="max-h-96 overflow-y-auto pr-1 hide-scrollbar">
+                      {produitsFiltres.map(produit => (
+                        <div
+                          key={produit.id}
+                          className="border-b border-gray-200 pb-4 mb-4 last:mb-0 last:pb-0 last:border-none p-2 cursor-none min-h-[120px] flex flex-col justify-between hover:shadow-lg transition"
+                          onClick={() => handleOpenModalProduit(produit)}
+                        >
+                          <div className="flex items-start justify-between mb-2">
+                            <div>
+                              <h3 className="font-semibold text-gray-900">{produit.name}</h3>
+                              <p className="text-sm text-gray-500">Réf: {produit.reference}</p>
+                            </div>
+                            <div className="flex space-x-2" onClick={e => e.stopPropagation()}>
+                              <button
+                                onClick={() => handleOpenModalProduit(produit)}
+                                className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                aria-label="Modifier produit"
+                                title="Modifier"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteProduit(produit.id)}
+                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                aria-label="Supprimer produit"
+                                title="Supprimer"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex space-x-2" onClick={e => e.stopPropagation()}>
-                            <button
-                              onClick={() => handleOpenModalProduit(produit)}
-                              className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                              aria-label="Modifier produit"
-                              title="Modifier"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteProduit(produit.id)}
-                              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                              aria-label="Supprimer produit"
-                              title="Supprimer"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
+                          <div className="text-sm text-gray-600">
+                            Prix d'achat : <span className="text-orange-600 font-semibold">{produit.price_buy} MAD</span><br />
+                            Prix de vente : <span className="text-green-600 font-semibold">{produit.price_sell} MAD</span><br />
+                            Quantité de stock : <span className="text-blue-600 font-semibold">{produit.quantityStock}</span>
                           </div>
                         </div>
-                        <div className="text-sm text-gray-600">
-                          Prix d'achat : <span className="text-orange-600 font-semibold">{produit.price_buy} MAD</span><br />
-                          Prix de vente : <span className="text-green-600 font-semibold">{produit.price_sell} MAD</span><br />
-                          Quantité de stock : <span className="text-blue-600 font-semibold">{produit.quantityStock}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <Modal
           isOpen={showModalProduit}
