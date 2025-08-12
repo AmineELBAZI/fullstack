@@ -1,6 +1,8 @@
 import axiosInstance from '../context/axiosInstance';
 
-const API_URL = '/products';
+const URL_base = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL2 ||  import.meta.env.VITE_locale ;
+const API_URL = `${URL_base}/api/products`;
+
 
 export const produitApi = {
   getAll: () => axiosInstance.get(API_URL),

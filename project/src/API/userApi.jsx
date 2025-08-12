@@ -1,6 +1,8 @@
 import axiosInstance from '../context/axiosInstance';
 
-const API_URL = '/users';
+const URL_base = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL2 ||  import.meta.env.VITE_locale;
+const API_URL = `${URL_base}/api/users`;
+
 
 export const userApi = {
   getAll: () => axiosInstance.get(API_URL),

@@ -22,8 +22,11 @@ import java.util.Optional;
 
 @CrossOrigin(origins = {
 	    "http://localhost:3000",
+	    "https://localhost:3000",
 	    "https://gmpv-frontend-nu.vercel.app",
-	    "77.237.238.8"
+	    "https://77.237.238.8",
+	    "http://77.237.238.8"
+		
 	})
 @RestController
 @RequestMapping("/api/auth")

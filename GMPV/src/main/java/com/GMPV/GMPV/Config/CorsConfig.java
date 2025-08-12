@@ -11,8 +11,10 @@ public class CorsConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
             .allowedOrigins(
                 "http://localhost:3000",
+                "https://localhost:3000",
                 "https://gmpv-frontend-nu.vercel.app",
-                "https://77.237.238.8"
+                "https://77.237.238.8:8085",
+                "http://77.237.238.8:8085"
             )
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")
