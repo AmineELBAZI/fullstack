@@ -7,23 +7,21 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 @Configuration
-@EnableWebSocketMessageBroker  // <--- this is crucial
+@EnableWebSocketMessageBroker  // enables WebSocket message handling
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic", "/queue");  // or your broker prefixes
+        // Configure message broker prefixes
+        config.enableSimpleBroker("/topic", "/queue");
         config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOrigins(
-                    "http://localhost:3000",                 // for development
-                    "https://gmpv-frontend-nu.vercel.app" ,
-                    "**" // all
-                )
+                // Allow all origins, including your frontend at 77.237.238.8 and others
+                .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
 }
