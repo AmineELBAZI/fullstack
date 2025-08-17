@@ -50,6 +50,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { icon: Archive, label: 'Mon Stock', path: '/mon-stock' },
     { icon: ShoppingCart, label: 'Enregistrer Vente', path: '/enregistrer-vente' },
     { icon: History, label: 'Mes Ventes', path: '/mes-ventes' },
+    { icon: Download, label: 'Extract Ticket', path: '/ExtractTicket' },
     { icon: Download, label: 'Exporter', path: '/Exporter' },
   ];
 

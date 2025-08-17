@@ -14,7 +14,12 @@ public class CorsConfig implements WebMvcConfigurer {
                 "https://localhost:3000",
                 "https://gmpv-frontend-nu.vercel.app",
                 "https://77.237.238.8:8085",
-                "http://77.237.238.8:8085"
+                "http://77.237.238.8:8085",
+                "http://futurefragrance.store",
+                "https://futurefragrance.store",
+                "http://www.futurefragrance.store",
+                "https://www.futurefragrance.store"
+                
             )
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")

@@ -19,7 +19,7 @@ const MonStock = lazy(() => import('./pages/seller/MonStock'));
 const EnregistrerVente = lazy(() => import('./pages/seller/EnregistrerVente'));
 const MesVentes = lazy(() => import('./pages/seller/MesVentes'));
 const Exporter = lazy(() => import('./pages/seller/Exporter'));
-
+const ExtractTicket = lazy(() => import('./pages/seller/ExtractTicket'));
 const Categories = lazy(() => import('./pages/Categories'));
 const ExporterFactures = lazy(() => import('./pages/ExporterFactures'));
 const Login = lazy(() => import('./pages/Login'));
@@ -187,6 +187,14 @@ const AppRoutes = () => {
                       element={
                         <PrivateRoute roles={['VENDEUR']}>
                           <MesVentes />
+                        </PrivateRoute>
+                      }
+                    />
+                      <Route
+                      path="/ExtractTicket"
+                      element={
+                        <PrivateRoute roles={['VENDEUR']}>
+                          <ExtractTicket />
                         </PrivateRoute>
                       }
                     />

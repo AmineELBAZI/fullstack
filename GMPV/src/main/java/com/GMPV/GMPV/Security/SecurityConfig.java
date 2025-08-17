@@ -47,6 +47,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/login", "/api/auth/logout").permitAll()
+                .requestMatchers("/api/print/**").permitAll()
                 .requestMatchers("/api/boutiques/*").hasAnyRole("VENDEUR", "ADMIN")
                 .requestMatchers("/api/boutiques/*/produits").hasAnyRole("VENDEUR", "ADMIN")
                 .requestMatchers("/api/stocks/*/valider").hasAnyRole("VENDEUR", "ADMIN")
