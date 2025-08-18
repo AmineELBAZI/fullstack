@@ -40,7 +40,7 @@ services:
     depends_on:
       - app
     ports:
-      - "80:80"  # React app served by nginx on port 80 (standard HTTP port)
+      - "3000:80"  # React app served by nginx on port 80 (standard HTTP port)
     networks:
       - gmpv-network
 

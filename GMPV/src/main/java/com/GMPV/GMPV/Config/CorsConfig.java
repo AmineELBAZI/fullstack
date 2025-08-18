@@ -12,8 +12,8 @@ public class CorsConfig implements WebMvcConfigurer {
             .allowedOrigins(
                 "http://localhost:3000",
                 "https://localhost:3000",
-                "https://77.237.238.8:8085",
-                "http://77.237.238.8:8085",
+                "https://77.237.238.8",
+                "http://77.237.238.8",
                 "http://futurefragrance.store",
                 "https://futurefragrance.store",
                 "http://www.futurefragrance.store",
