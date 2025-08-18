@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,17 +18,7 @@ import com.GMPV.GMPV.Service.ProduitService;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = {
-	    "http://localhost:3000",
-	    "https://localhost:3000",
-	    "https://77.237.238.8",
-	    "http://77.237.238.8",
-    "http://futurefragrance.store",
-    "https://futurefragrance.store",
-    "http://www.futurefragrance.store",
-    "https://www.futurefragrance.store"
-		
-	})
+
 public class ProduitController {
 
     @Autowired

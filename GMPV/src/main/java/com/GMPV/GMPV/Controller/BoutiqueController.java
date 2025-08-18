@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,17 +23,6 @@ import com.GMPV.GMPV.Service.ProduitService;
 
 @RestController
 @RequestMapping("/api/boutiques")
-@CrossOrigin(origins = {
-	    "http://localhost:3000",
-	    "https://localhost:3000",
-	    "https://77.237.238.8",
-	    "http://77.237.238.8",
-    "http://futurefragrance.store",
-    "https://futurefragrance.store",
-    "http://www.futurefragrance.store",
-    "https://www.futurefragrance.store"
-		
-	})
 public class BoutiqueController {
 
     private final BoutiqueService boutiqueService;
