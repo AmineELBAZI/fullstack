@@ -7,7 +7,9 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: bdgmpv
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: PassRoot123456 
+      MYSQL_USER: user                     
+      MYSQL_PASSWORD: pass123456              
     ports:
       - "3306:3306"
     volumes:
@@ -18,29 +20,29 @@ services:
   app:
     build:
       context: ./GMPV
-      dockerfile: Dockerfile  # Your Spring Boot Dockerfile (assuming it is in >
+      dockerfile: Dockerfile
     container_name: springboot-gmpv
     depends_on:
       - mysql
     ports:
-      - "8081:8081"  # Backend accessible on server_ip:8081
+      - "8081:8081"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bdgmpv?serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: ""
+      SPRING_DATASOURCE_USERNAME: user       
+      SPRING_DATASOURCE_PASSWORD: pass123456 
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
     networks:
       - gmpv-network
 
   frontend:
     build:
-      context: ./project     # Your React app folder with Dockerfile inside
+      context: ./project
       dockerfile: Dockerfile
     container_name: react-gmpv
     depends_on:
       - app
     ports:
-      - "3000:80"  # React app served by nginx on port 80 (standard HTTP port)
+      - "3000:80"
     networks:
       - gmpv-network
 
@@ -49,4 +51,3 @@ volumes:
 
 networks:
   gmpv-network:
-
