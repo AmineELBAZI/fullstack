@@ -52,7 +52,7 @@ const Produits = () => {
     };
 
     fetchProduitsParCategorie();
-  }, [categories.length]); // <- uniquement sur changement du nombre de catégories
+  }, [categories]); // <- uniquement sur changement du nombre de catégories
 
 
   const createMutation = useMutation({
