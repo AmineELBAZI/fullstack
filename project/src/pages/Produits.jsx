@@ -123,20 +123,28 @@ const Produits = () => {
   };
 
   const handleSubmitProduit = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const dataToSubmit = {
-      ...formDataProduit,
-      categorie: { id: formDataProduit.categorie },
-      reference: formDataProduit.reference?.trim() === '' ? null : formDataProduit.reference.trim(),
-    };
+  // Calculate per-unit prices
+  const quantity = formDataProduit.quantityStock || 1; // avoid division by 0
+  const price_buy_unit = formDataProduit.price_buy / quantity;
+  const price_sell_unit = formDataProduit.price_sell / quantity;
 
-    if (editingProduit) {
-      updateMutation.mutate({ id: editingProduit.id, ...dataToSubmit });
-    } else {
-      createMutation.mutate(dataToSubmit);
-    }
+  const dataToSubmit = {
+    ...formDataProduit,
+    price_buy: price_buy_unit,
+    price_sell: price_sell_unit,
+    categorie: { id: formDataProduit.categorie },
+    reference: formDataProduit.reference?.trim() === '' ? null : formDataProduit.reference.trim(),
   };
+
+  if (editingProduit) {
+    updateMutation.mutate({ id: editingProduit.id, ...dataToSubmit });
+  } else {
+    createMutation.mutate(dataToSubmit);
+  }
+};
+
 
   const handleDeleteProduit = (id) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
@@ -301,7 +309,7 @@ const Produits = () => {
             {/* Prix */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Prix d'achat (1 g/ml)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Prix d'achat </label>
                 <input
                   type="number"
                   required
@@ -313,7 +321,7 @@ const Produits = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Prix de vente (1 g/ml)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Prix de vente </label>
                 <input
                   type="number"
                   required
