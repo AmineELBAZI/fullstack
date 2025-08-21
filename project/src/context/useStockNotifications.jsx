@@ -4,8 +4,6 @@ import { Stomp } from '@stomp/stompjs';
 import toast from 'react-hot-toast';
 import { X } from 'lucide-react';
 
-
-
 const MAX_RETRIES = 5;
 const RETRY_DELAY_MS = 5000;
 
@@ -38,28 +36,24 @@ const useStockNotifications = (isAdmin) => {
   const [status, setStatus] = useState('disconnected');
   const retryCount = useRef(0);
   const stompClient = useRef(null);
-const baseUrl = import.meta.env.VITE_BASE_URL ||  import.meta.env.VITE_BASE_URL2;
+  const baseUrl = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL2;
+
   useEffect(() => {
     if (!isAdmin) return;
-
     if (!baseUrl) {
       console.error("❌ baseUrl is undefined! Check your environment config.");
       return;
     }
 
-const wsUrl = `${baseUrl.replace(/\/$/, '')}/ws`;
-console.log("WebSocket URL:", wsUrl);
-
-
+    const wsUrl = `${baseUrl.replace(/\/$/, '')}/ws`;
     const user = JSON.parse(localStorage.getItem('user'));
-    const password = localStorage.getItem('password');
-    if (!user?.email || !password) return;
+    const password = '123456'; // your password
+
+    if (!user?.email) return;
 
     const socket = new SockJS(wsUrl);
-
-
     stompClient.current = Stomp.over(socket);
-    stompClient.current.debug = () => { };
+    stompClient.current.debug = () => {};
 
     setStatus('connecting');
 
@@ -73,9 +67,18 @@ console.log("WebSocket URL:", wsUrl);
           setStatus('connected');
           retryCount.current = 0;
 
+          // Track if first connection notification should be skipped
+          const skipFirstAlert = localStorage.getItem('skipFirstStockAlert') === 'true';
+          if (!skipFirstAlert) {
+            localStorage.setItem('skipFirstStockAlert', 'true'); // mark first connection done
+          }
+
           stompClient.current.subscribe('/topic/stock-alerts', (message) => {
             const data = JSON.parse(message.body);
             if (typeof data.quantity !== 'number') data.quantity = 0;
+
+            // Skip first notification after login
+            if (!skipFirstAlert) return;
 
             const previous = JSON.parse(sessionStorage.getItem('websocketAlerts') || '[]');
             const updated = [...previous];

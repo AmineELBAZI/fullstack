@@ -275,7 +275,7 @@ const PointsVente = () => {
                   <ul>
                     {boutique.stocks.map(stock => (
                       stock.produit && (
-                        <li key={stock.id} className="flex justify-between items-start bg-gray-50 border border-orange-200 p-3 rounded-xl shadow-sm">
+                        <li key={stock.id} className="flex justify-between items-start bg-gray-50 border border-orange-200 p-3 rounded-xl shadow-sm mb-1 ">
                           <div className="text-sm text-gray-700 space-y-1">
                             <div className="font-semibold text-gray-800">{stock.produit.name}</div>
                             <div className="text-sm">

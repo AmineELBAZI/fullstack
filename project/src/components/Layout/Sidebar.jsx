@@ -13,18 +13,17 @@ import {
   Tags,
   AlertCircle,
   BarChart3,
+  Ticket,
   Download,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { startTransition } from 'react';
 import PointsVenteApi from '../../API/PointsVenteApi';
 
-
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const { user, logout, isAdmin, isSeller } = useAuth();
   const [boutiqueName, setBoutiqueName] = useState(null);
 
-  // Fetch boutique name if user is seller and has boutiqueId
   useEffect(() => {
     if (isSeller() && user?.boutiqueId) {
       PointsVenteApi
@@ -43,6 +42,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { icon: Users, label: 'Utilisateurs', path: '/utilisateurs' },
     { icon: AlertCircle, label: 'Alert list', path: '/Alerts' },
     { icon: BarChart3, label: 'Rapports', path: '/Rapports' },
+    { icon: Ticket, label: 'Exporter des reçus', path: '/ExtractTicketAdmin' },
     { icon: Download, label: 'Exporter des Factures', path: '/ExporterFactures' },
   ];
 
@@ -50,7 +50,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { icon: Archive, label: 'Mon Stock', path: '/mon-stock' },
     { icon: ShoppingCart, label: 'Enregistrer Vente', path: '/enregistrer-vente' },
     { icon: History, label: 'Mes Ventes', path: '/mes-ventes' },
-    { icon: Download, label: 'Extract Ticket', path: '/ExtractTicket' },
+    { icon: Ticket, label: 'Extract Ticket', path: '/ExtractTicket' },
     { icon: Download, label: 'Exporter', path: '/Exporter' },
   ];
 
@@ -70,17 +70,21 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       {/* Sidebar */}
       <div
         className={`
-          fixed left-0 top-0 h-full bg-white text-gray-700 shadow-xl z-50 transform transition-transform duration-300 ease-in-out
+          fixed left-0 top-0 h-full bg-gray-100 text-gray-700 shadow-xl z-50 transform transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0 lg:static lg:shadow-none lg:border-r lg:border-gray-300
-          w-64
+          w-full sm:w-64 md:w-72 min-w-[16rem]
         `}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-300 bg-white">
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-300 bg-gray-100">
             <div className="flex items-center space-x-3">
-              <img src="/img/logo.jpg" alt="Logo StockPro" className="h-25 w-auto" />
+              <img
+                src="/img/logo.jpg"
+                alt="Logo StockPro"
+                className="h-10 sm:h-12 md:h-14 w-auto"
+              />
             </div>
             <button
               onClick={toggleSidebar}
@@ -92,30 +96,31 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </div>
 
           {/* User info */}
-          <div className="p-6 border-b border-gray-300 flex items-center space-x-3">
+          <div className="p-4 sm:p-6 border-b border-gray-300 flex items-center space-x-3 bg-gray-100">
             <div
-              className={`h-10 w-10 rounded-full flex items-center justify-center ${isAdmin() ? 'bg-blue-700' : 'bg-green-700'
-                }`}
+              className={`h-10 w-10 sm:h-12 sm:w-12 rounded-full flex items-center justify-center ${
+                isAdmin() ? 'bg-blue-700' : 'bg-green-700'
+              }`}
             >
-              <span className="font-semibold text-white">{userInitial}</span>
+              <span className="font-semibold text-white text-sm sm:text-base">{userInitial}</span>
             </div>
-            <div>
-              <p className="flex items-center space-x-2 font-medium text-gray-700">
-                <User className="w-5 h-5 text-lime-800" />
-                <span>{user?.email || 'Utilisateur'}</span>
+            <div className="truncate">
+              <p className="flex items-center space-x-2 font-medium text-gray-700 text-sm sm:text-base truncate">
+                <User className="w-4 h-4 sm:w-5 sm:h-5 text-lime-800 flex-shrink-0" />
+                <span className="truncate">{user?.email || 'Utilisateur'}</span>
               </p>
 
               {isSeller() && (
-                <p className="flex items-center space-x-2 text-xs text-gray-700 font-medium mt-1">
-                  <Store className="w-5 h-5 text-sky-700" />
-                  <span>{boutiqueName ?? 'Chargement...'}</span>
+                <p className="flex items-center space-x-2 text-xs sm:text-sm text-gray-700 font-medium mt-1 truncate">
+                  <Store className="w-4 h-4 sm:w-5 sm:h-5 text-sky-700 flex-shrink-0" />
+                  <span className="truncate">{boutiqueName ?? 'Chargement...'}</span>
                 </p>
               )}
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-6 overflow-y-auto">
+          <nav className="flex-1 p-4 sm:p-6 overflow-y-auto hide-scrollbar">
             <ul className="space-y-2">
               {menuItems.map(({ icon: Icon, label, path }) => (
                 <li key={path}>
@@ -123,23 +128,21 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     to={path}
                     onClick={() => {
                       if (window.innerWidth < 1024) {
-                        startTransition(() => {
-                          toggleSidebar();
-                        });
+                        startTransition(() => toggleSidebar());
                       }
                     }}
                     className={({ isActive }) =>
-                      `flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200
+                      `flex items-center space-x-2 sm:space-x-3 px-4 sm:px-5 py-3 sm:py-4 rounded-lg transition-colors duration-200 text-sm sm:text-base w-full block
                       ${isActive
                         ? isAdmin()
                           ? 'bg-blue-800 text-blue-100 border-r-4 border-blue-500'
                           : 'bg-green-800 text-green-300 border-r-4 border-green-500'
                         : 'text-gray-700 hover:bg-gray-200 hover:text-gray-900'
-                      }`
+                      } truncate cursor-pointer`
                     }
                   >
-                    <Icon className="h-5 w-5" />
-                    <span className="font-medium">{label}</span>
+                    <Icon className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                    <span className="truncate">{label}</span>
                   </NavLink>
                 </li>
               ))}
@@ -147,16 +150,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </nav>
 
           {/* Logout */}
-          <div className="p-6 border-t border-gray-300">
+          <div className="p-4 sm:p-6 border-t border-gray-300 bg-gray-100">
             <button
               onClick={async () => {
                 await logout();
                 window.location.href = '/';
               }}
-              className="flex items-center space-x-3 w-full px-4 py-3 rounded-lg text-red-500 hover:bg-red-100 transition-colors"
+              className="flex items-center space-x-2 sm:space-x-3 w-full px-4 sm:px-5 py-3 sm:py-4 rounded-lg text-red-500 hover:bg-red-100 transition-colors text-sm sm:text-base cursor-pointer"
             >
-              <LogOut className="h-5 w-5" />
-              <span className="font-medium">Déconnexion</span>
+              <LogOut className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+              <span className="truncate">Déconnexion</span>
             </button>
           </div>
         </div>

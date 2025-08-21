@@ -19,7 +19,7 @@ const Produits = () => {
     price_sell: 0,
     quantityStock: 0,
     categorie: null,
-    reference: '', // uniquement pour l’édition
+    reference: '', // uniquement pour l’édition ou saisie
   });
 
   const queryClient = useQueryClient();
@@ -33,6 +33,8 @@ const Produits = () => {
   const [loadingProduits, setLoadingProduits] = useState(true);
 
   useEffect(() => {
+    if (categories.length === 0) return;
+
     const fetchProduitsParCategorie = async () => {
       setLoadingProduits(true);
       try {
@@ -49,14 +51,9 @@ const Produits = () => {
       }
     };
 
-    if (categories.length > 0) {
-      fetchProduitsParCategorie();
-    } else {
-      // If no categories, clear products
-      setProduitsParCategorie({});
-      setLoadingProduits(false);
-    }
-  }, [categories]);
+    fetchProduitsParCategorie();
+  }, [categories.length]); // <- uniquement sur changement du nombre de catégories
+
 
   const createMutation = useMutation({
     mutationFn: produitApi.create,
@@ -130,12 +127,9 @@ const Produits = () => {
 
     const dataToSubmit = {
       ...formDataProduit,
-      categorie: { id: formDataProduit.categorie }, // ENVOYER SEULEMENT L’ID
+      categorie: { id: formDataProduit.categorie },
+      reference: formDataProduit.reference?.trim() === '' ? null : formDataProduit.reference.trim(),
     };
-
-    if (!editingProduit) {
-      delete dataToSubmit.reference; // la référence est générée backend
-    }
 
     if (editingProduit) {
       updateMutation.mutate({ id: editingProduit.id, ...dataToSubmit });
@@ -166,7 +160,6 @@ const Produits = () => {
     );
   }
 
-  // Check if all products lists are empty
   const allProduitsEmpty = categories.length > 0
     ? Object.values(produitsParCategorie).every(prods => prods.length === 0)
     : true;
@@ -204,7 +197,6 @@ const Produits = () => {
           </Button>
         </div>
 
-        {/* Show message if no categories or no products */}
         {categories.length === 0 ? (
           <p className="text-center text-gray-500 py-6">Aucune catégorie trouvée.</p>
         ) : allProduitsEmpty ? (
@@ -260,8 +252,8 @@ const Produits = () => {
                             </div>
                           </div>
                           <div className="text-sm text-gray-600">
-                            Prix d'achat : <span className="text-orange-600 font-semibold">{produit.price_buy} MAD</span><br />
-                            Prix de vente : <span className="text-green-600 font-semibold">{produit.price_sell} MAD</span><br />
+                            Prix d'achat (1 g/ml) : <span className="text-orange-600 font-semibold">{produit.price_buy} MAD</span><br />
+                            Prix de vente (1 g/ml) : <span className="text-green-600 font-semibold">{produit.price_sell} MAD</span><br />
                             Quantité de stock : <span className="text-blue-600 font-semibold">{produit.quantityStock}</span>
                           </div>
                         </div>
@@ -280,18 +272,21 @@ const Produits = () => {
           title={editingProduit ? 'Modifier le produit' : 'Nouveau produit'}
         >
           <form onSubmit={handleSubmitProduit} className="space-y-4">
-            {editingProduit && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Référence</label>
-                <input
-                  type="text"
-                  disabled
-                  value={formDataProduit.reference}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600"
-                />
-              </div>
-            )}
 
+            {/* Référence */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Référence (optionnelle)</label>
+              <input
+                type="text"
+                placeholder="Laissez vide pour générer automatiquement"
+                value={formDataProduit.reference}
+                onChange={e => setFormDataProduit({ ...formDataProduit, reference: e.target.value })}
+                className={`w-full px-3 py-2 border border-gray-300 rounded-lg ${editingProduit ? 'bg-gray-100 text-gray-600 cursor-not-allowed' : ''}`}
+                disabled={!!editingProduit}
+              />
+            </div>
+
+            {/* Nom */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Nom</label>
               <input
@@ -303,9 +298,10 @@ const Produits = () => {
               />
             </div>
 
+            {/* Prix */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Prix d'achat</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Prix d'achat (1 g/ml)</label>
                 <input
                   type="number"
                   required
@@ -317,7 +313,7 @@ const Produits = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Prix de vente</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Prix de vente (1 g/ml)</label>
                 <input
                   type="number"
                   required
@@ -330,6 +326,7 @@ const Produits = () => {
               </div>
             </div>
 
+            {/* Quantité */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Quantité en stock</label>
               <input
@@ -343,6 +340,7 @@ const Produits = () => {
               />
             </div>
 
+            {/* Catégorie */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Catégorie</label>
               <select

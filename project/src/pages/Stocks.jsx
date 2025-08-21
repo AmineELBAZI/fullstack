@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Package, TrendingDown, AlertTriangle } from 'lucide-react';
+import { Plus, Package, TrendingDown, AlertTriangle, Layers } from 'lucide-react';
 import { stockApi } from '../services/stockApi';
 import pointVenteApi from '../API/PointsVenteApi';
 import { produitApi } from '../API/produitApi';
@@ -246,25 +246,42 @@ const Stocks = () => {
             {produitsNormal.length === 0 && (
               <p className="text-gray-500 text-sm">Aucun produit en stock normal</p>
             )}
-            <div className="max-h-96 overflow-y-auto hide-scrollbar">
+            <div className="max-h-96 overflow-y-auto hide-scrollbar space-y-4">
               {produitsNormal.map(produit => {
                 const status = getStockStatus(produit.quantityStock);
                 return (
-                  <div key={produit.id} className="bg-white rounded-xl shadow-sm border p-4 mb-4">
-                    <h4 className="font-semibold text-gray-900">{produit.name}</h4>
-                    <p className="text-sm text-gray-600 mb-1">Réf: {produit.reference}</p>
-                    <p className="text-sm text-gray-700 mb-1">
-                      Prix d'achat : <span className="text-orange-600">{produit.price_buy.toFixed(2)} MAD</span>
-                    </p>
-                    <p className="text-sm text-gray-700 mb-1">
-                      Prix de vente : <span className="text-green-600">{produit.price_sell.toFixed(2)} MAD</span>
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      Quantité en stock : <span className="font-bold">{produit.quantityStock}</span>
-                    </p>
-                    <span className={`inline-block text-xs px-2 py-1 rounded-full font-medium ${status.color}`}>
-                      {status.label}
-                    </span>
+                  <div
+                    key={produit.id}
+                    className="bg-white  rounded-2xl shadow-lg border border-green-200 p-6 hover:shadow-xl transition-shadow duration-300"
+                  >
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-4 border-b border-black-200 pb-2">
+                      <h3 className="text-lg font-bold text-green-900 truncate">{produit.name}</h3>
+                      <span className={`text-xs px-3 py-1 rounded-full text-black  font-medium ${status.color}`}>
+                        {status.label}
+                      </span>
+                    </div>
+
+                    {/* Body */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
+                      <div className="space-y-2">
+                        <p className="text-sm"><span className="font-semibold">Réf :</span> {produit.reference}</p>
+                        <p className="text-sm"><span className="font-semibold">Prix d'achat :</span> <span className="text-orange-600">{produit.price_buy.toFixed(2)} MAD</span></p>
+
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-sm"><span className="font-semibold">Prix de vente :</span> <span className="text-green-600">{produit.price_sell.toFixed(2)} MAD</span></p>
+                        <p className="text-sm"><span className="font-semibold">Prix total :</span> <span className="text-green-600">{(produit.price_sell * produit.quantityStock).toFixed(2)} MAD</span></p>
+                      </div>
+                    </div>
+                    <div className="space-y-2 text-black m-2 border-t border-black-300">
+                      <p className="text-m p-4 pb-0 flex items-center gap-2">
+                        <Layers className="h-6 w-6 text-red-600" />
+                        <span className="font-semibold">Quantité :</span>
+                        <span className="font-bold">{produit.quantityStock}</span>
+                      </p>
+                    </div>
+
                   </div>
                 );
               })}
@@ -277,25 +294,39 @@ const Stocks = () => {
             {produitsFaible.length === 0 && (
               <p className="text-gray-500 text-sm">Aucun produit en stock faible</p>
             )}
-            <div className="max-h-96 overflow-y-auto hide-scrollbar">
+            <div className="max-h-96 overflow-y-auto hide-scrollbar space-y-4">
               {produitsFaible.map(produit => {
                 const status = getStockStatus(produit.quantityStock);
                 return (
-                  <div key={produit.id} className="bg-amber-50 rounded-xl shadow-sm border p-4 mb-4">
-                    <h4 className="font-semibold text-gray-900">{produit.name}</h4>
-                    <p className="text-sm text-gray-600 mb-1">Réf: {produit.reference}</p>
-                    <p className="text-sm text-gray-700 mb-1">
-                      Prix d'achat : <span className="text-orange-600">{produit.price_buy.toFixed(2)} MAD</span>
-                    </p>
-                    <p className="text-sm text-gray-700 mb-1">
-                      Prix de vente : <span className="text-green-600">{produit.price_sell.toFixed(2)} MAD</span>
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      Quantité en stock : <span className="font-bold">{produit.quantityStock}</span>
-                    </p>
-                    <span className={`inline-block text-xs px-2 py-1 rounded-full font-medium ${status.color}`}>
-                      {status.label}
-                    </span>
+                  <div
+                    key={produit.id}
+                    className="bg-amber-50 hover:bg-white rounded-2xl shadow-lg border border-amber-200 p-6 hover:shadow-xl transition-shadow duration-300"
+                  >
+                    <div className="flex items-center justify-between mb-4 border-b border-black-200 pb-2">
+                      <h3 className="text-lg font-bold text-amber-900 truncate">{produit.name}</h3>
+                      <span className={`text-xs px-3 py-1 rounded-full text-black font-medium ${status.color}`}>
+                        {status.label}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
+                      <div className="space-y-2">
+                        <p className="text-sm"><span className="font-semibold">Réf :</span> {produit.reference}</p>
+                        <p className="text-sm"><span className="font-semibold">Prix d'achat :</span> <span className="text-orange-600">{produit.price_buy.toFixed(2)} MAD</span></p>
+
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-sm"><span className="font-semibold">Prix de vente :</span> <span className="text-green-600">{produit.price_sell.toFixed(2)} MAD</span></p>
+                        <p className="text-sm"><span className="font-semibold">Prix total :</span> <span className="text-green-600">{(produit.price_sell * produit.quantityStock).toFixed(2)} MAD</span></p>
+                      </div>
+                    </div>
+                  <div className="space-y-2 text-black m-2 border-t border-black-300">
+                      <p className="text-m p-4 pb-0 flex items-center gap-2">
+                        <Layers className="h-6 w-6 text-red-600" />
+                        <span className="font-semibold">Quantité :</span>
+                        <span className="font-bold">{produit.quantityStock}</span>
+                      </p>
+                    </div>
                   </div>
                 );
               })}
@@ -308,31 +339,47 @@ const Stocks = () => {
             {produitsRupture.length === 0 && (
               <p className="text-gray-500 text-sm">Aucun produit en rupture de stock</p>
             )}
-            <div className="max-h-96 overflow-y-auto hide-scrollbar">
+            <div className="max-h-96 overflow-y-auto hide-scrollbar space-y-4">
               {produitsRupture.map(produit => {
                 const status = getStockStatus(produit.quantityStock);
                 return (
-                  <div key={produit.id} className="bg-red-50 rounded-xl shadow-sm border p-4 mb-4">
-                    <h4 className="font-semibold text-gray-900">{produit.name}</h4>
-                    <p className="text-sm text-gray-600 mb-1">Réf: {produit.reference}</p>
-                    <p className="text-sm text-gray-700 mb-1">
-                      Prix d'achat : <span className="text-orange-600">{produit.price_buy.toFixed(2)} MAD</span>
-                    </p>
-                    <p className="text-sm text-gray-700 mb-1">
-                      Prix de vente : <span className="text-green-600">{produit.price_sell.toFixed(2)} MAD</span>
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      Quantité en stock : <span className="font-bold">{produit.quantityStock}</span>
-                    </p>
-                    <span className={`inline-block text-xs px-2 py-1 rounded-full font-medium ${status.color}`}>
-                      {status.label}
-                    </span>
+                  <div
+                    key={produit.id}
+                    className="bg-red-50 hover:bg-white rounded-2xl shadow-lg border border-red-200 p-6 hover:shadow-xl transition-shadow duration-300"
+                  >
+                    <div className="flex items-center justify-between mb-4 border-b border-black-300 pb-2">
+                      <h3 className="text-lg font-bold text-red-900 truncate">{produit.name}</h3>
+                      <span className={`text-xs px-3 py-1 rounded-full text-black font-medium ${status.color}`}>
+                        {status.label}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
+                      <div className="space-y-2">
+                        <p className="text-sm"><span className="font-semibold">Réf :</span> {produit.reference}</p>
+                        <p className="text-sm"><span className="font-semibold">Prix d'achat :</span> <span className="text-orange-600">{produit.price_buy.toFixed(2)} MAD</span></p>
+
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-sm"><span className="font-semibold">Prix de vente :</span> <span className="text-green-600">{produit.price_sell.toFixed(2)} MAD</span></p>
+                        <p className="text-sm"><span className="font-semibold">Prix total :</span> <span className="text-green-600">{(produit.price_sell * produit.quantityStock).toFixed(2)} MAD</span></p>
+                      </div>
+
+                    </div>
+                    <div className="space-y-2 text-black m-2 border-t border-black-300">
+                      <p className="text-m p-4 pb-0 flex items-center gap-2">
+                        <Layers className="h-6 w-6 text-red-600" />
+                        <span className="font-semibold">Quantité :</span>
+                        <span className="font-bold">{produit.quantityStock}</span>
+                      </p>
+                    </div>
                   </div>
                 );
               })}
             </div>
           </div>
         </div>
+
 
         {/* Modal de réapprovisionnement */}
         <Modal isOpen={showModal} onClose={handleCloseModal} title="Réapprovisionner le stock">

@@ -30,6 +30,7 @@ const Utilisateurs = lazy(() => import('./pages/Utilisateurs'));
 const Alerts = lazy(() => import('./pages/Alertes'));
 const Rapports = lazy(() => import('./pages/Rapports'));
 const Ventes = lazy(() => import('./pages/Ventes'));
+const ExtractTicketAdmin = lazy(() => import('./pages/ExtractTicketAdmin'));
 
 // ConnectionStatus component to show WS status in UI
 const ConnectionStatus = ({ status }) => {
@@ -150,6 +151,14 @@ const AppRoutes = () => {
                       element={
                         <PrivateRoute roles={['ADMIN']}>
                           <Rapports />
+                        </PrivateRoute>
+                      }
+                    />
+                      <Route
+                      path="/ExtractTicketAdmin"
+                      element={
+                        <PrivateRoute roles={['ADMIN']}>
+                          <ExtractTicketAdmin />
                         </PrivateRoute>
                       }
                     />
