@@ -7,6 +7,7 @@ import { X } from 'lucide-react';
 const MAX_RETRIES = 5;
 const RETRY_DELAY_MS = 5000;
 
+// Toast component for low stock alerts
 const StockNotificationToast = ({ produitName, reference, boutiqueName, quantity, t }) => (
   <div
     className="max-w-md w-full bg-white text-gray-800 rounded-lg shadow-lg p-4 flex items-start space-x-4 border-l-8 border-red-600 select-none"
@@ -36,7 +37,7 @@ const useStockNotifications = (isAdmin) => {
   const [status, setStatus] = useState('disconnected');
   const retryCount = useRef(0);
   const stompClient = useRef(null);
-  const baseUrl = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL2;
+  const baseUrl = import.meta.env.VITE_BASE_URL;
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -45,12 +46,23 @@ const useStockNotifications = (isAdmin) => {
       return;
     }
 
+    // Get user and password from localStorage
+    const userStr = localStorage.getItem('user');
+    const password = localStorage.getItem('password');
+
+    if (!userStr || !password) {
+      console.error('User or password not found in localStorage');
+      return;
+    }
+
+    const user = JSON.parse(userStr);
+
+    if (!user?.email) {
+      console.error('Invalid user object in localStorage');
+      return;
+    }
+
     const wsUrl = `${baseUrl.replace(/\/$/, '')}/ws`;
-    const user = JSON.parse(localStorage.getItem('user'));
-    const password = '123456'; // your password
-
-    if (!user?.email) return;
-
     const socket = new SockJS(wsUrl);
     stompClient.current = Stomp.over(socket);
     stompClient.current.debug = () => {};

@@ -1,9 +1,7 @@
 import axiosInstance from '../context/axiosInstance';
 
 const URL_base =
-  import.meta.env.VITE_BASE_URL ||
-  import.meta.env.VITE_BASE_URL2 ||
-  import.meta.env.VITE_locale;
+  import.meta.env.VITE_BASE_URL ;
 
 const API_URL = `${URL_base}/api/ventes`;
 const PRINT_API_URL = `${URL_base}/api/print`;
