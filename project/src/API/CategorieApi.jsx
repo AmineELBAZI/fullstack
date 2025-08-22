@@ -1,5 +1,5 @@
 import axiosInstance from '../context/axiosInstance';
-const URL_base = import.meta.env.VITE_BASE_URL ;
+const URL_base = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL2 ||  import.meta.env.VITE_locale;
 const API_URL = `${URL_base}/api/categories`;
 
 
