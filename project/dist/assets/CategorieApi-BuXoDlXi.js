@@ -1,0 +1,1 @@
+import{f as t}from"./index-tLwmzl-Q.js";const s="http://futurefragrance.store",a=`${s}/api/categories`,c={getAll:()=>t.get(a),create:e=>t.post(a,e),update:(e,o)=>t.put(`${a}/${e}`,o),delete:e=>t.delete(`${a}/${e}`)};export{c};
