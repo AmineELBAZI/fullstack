@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Package, TrendingDown, AlertTriangle, Layers } from 'lucide-react';
-import { stockApi } from '../services/stockApi';
 import pointVenteApi from '../API/PointsVenteApi';
 import { produitApi } from '../API/produitApi';
 import { categorieApi } from '../API/CategorieApi';
@@ -43,30 +42,8 @@ const Stocks = () => {
     queryFn: () => categorieApi.getAll().then(res => res.data),
   });
 
-  // Mutation pour réapprovisionnement
-  const reapprovisionnementMutation = useMutation({
-    mutationFn: stockApi.reapprovisionner,
-    onSuccess: () => {
-      queryClient.invalidateQueries(['allProduits']);
-      toast.success('Réapprovisionnement effectué avec succès');
-      handleCloseModal();
-    },
-    onError: () => {
-      toast.error('Erreur lors du réapprovisionnement');
-    },
-  });
 
 
-
-  // Fermer modal réapprovisionnement
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setFormData({
-      produitId: '',
-      pointVenteId: '',
-      quantite: 0,
-    });
-  };
 
   // Soumettre réapprovisionnement
   const handleSubmit = (e) => {
