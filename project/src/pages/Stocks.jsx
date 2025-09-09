@@ -248,7 +248,7 @@ const Stocks = () => {
                 {produits.length === 0 && (
                   <p className="text-gray-500 text-sm">Aucun produit en stock {statusName.toLowerCase()}</p>
                 )}
-                <div className="max-h-96 overflow-y-auto hide-scrollbar space-y-4">
+                <div className="max-h-[800px] overflow-y-auto hide-scrollbar space-y-4">
                   {produits.map(produit => {
                     const status = getStockStatus(produit.quantityStock);
                     return (

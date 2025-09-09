@@ -127,8 +127,8 @@ const Produits = () => {
 
   // Calculate per-unit prices
   const quantity = formDataProduit.quantityStock || 1; // avoid division by 0
-  const price_buy_unit = formDataProduit.price_buy / quantity;
-  const price_sell_unit = formDataProduit.price_sell / quantity;
+  const price_buy_unit = formDataProduit.price_buy;
+  const price_sell_unit = formDataProduit.price_sell ;
 
   const dataToSubmit = {
     ...formDataProduit,
