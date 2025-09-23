@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PrinterService {
 
-    @Value("${printer.ip:192.168.123.101}") // default IP
+    @Value("${printer.ip:192.168.123.100}") // default IP
     private String printerIp;
 
     @Value("${printer.port:9100}") // default port
