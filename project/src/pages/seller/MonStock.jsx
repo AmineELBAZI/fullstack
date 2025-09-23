@@ -158,7 +158,6 @@ const MonStock = () => {
                 <th className="px-4 py-3 text-left font-medium">Stock ID</th>
                 <th className="px-4 py-3 text-left font-medium">Référence</th>
                 <th className="px-4 py-3 text-left font-medium">Nom</th>
-                <th className="px-4 py-3 text-left font-medium">Prix Achat (MAD)</th>
                 <th className="px-4 py-3 text-left font-medium">Prix Vente (MAD)</th>
                 <th className="px-4 py-3 text-left font-medium">Boutique Stock</th>
               </tr>
@@ -169,7 +168,6 @@ const MonStock = () => {
                   <td className="px-4 py-3">{stock.id}</td>
                   <td className="px-4 py-3">{stock.produit?.reference}</td>
                   <td className="px-4 py-3">{stock.produit?.name}</td>
-                  <td className="px-4 py-3">{stock.produit?.price_buy?.toFixed(2)}</td>
                   <td className="px-4 py-3">{stock.produit?.price_sell?.toFixed(2)}</td>
                   <td className="px-4 py-3">{stock.quantity}</td>
                 </tr>
@@ -191,7 +189,6 @@ const MonStock = () => {
                 <th className="px-4 py-3 text-left font-medium">Stock ID</th>
                 <th className="px-4 py-3 text-left font-medium">Référence</th>
                 <th className="px-4 py-3 text-left font-medium">Nom</th>
-                <th className="px-4 py-3 text-left font-medium">Prix Achat (MAD)</th>
                 <th className="px-4 py-3 text-left font-medium">Prix Vente (MAD)</th>
                 <th className="px-4 py-3 text-left font-medium">Boutique Stock</th>
                 <th className="px-4 py-3 text-left font-medium">Actions</th>
@@ -203,7 +200,6 @@ const MonStock = () => {
                   <td className="px-4 py-3">{stock.id}</td>
                   <td className="px-4 py-3">{stock.produit?.reference}</td>
                   <td className="px-4 py-3">{stock.produit?.name}</td>
-                  <td className="px-4 py-3">{stock.produit?.price_buy?.toFixed(2)}</td>
                   <td className="px-4 py-3">{stock.produit?.price_sell?.toFixed(2)}</td>
                   <td className="px-4 py-3">{stock.quantity}</td>
                   <td className="px-4 py-3">
