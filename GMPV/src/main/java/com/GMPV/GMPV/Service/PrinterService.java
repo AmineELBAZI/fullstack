@@ -54,7 +54,7 @@ public class PrinterService {
     private void sendToPrinter(String tsplData) throws IOException {
         try (Socket socket = new Socket()) {
             // timeout helps if printer is unreachable
-            socket.connect(new InetSocketAddress(printerIp, printerPort), 3000);
+            socket.connect(new InetSocketAddress(printerIp, printerPort), 6000);
             try (OutputStream out = socket.getOutputStream()) {
                 out.write(tsplData.getBytes(StandardCharsets.US_ASCII));
                 out.flush();
