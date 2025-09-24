@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -30,7 +32,7 @@ public class VenteService {
     private final VenteRepository venteRepository;
     private final StockRepository stockRepository;
     private final StockService stockService;
-    private final PrinterService printerService; // Add network printer service
+    private final PrinterService printerService;
 
     private static final Logger logger = LoggerFactory.getLogger(VenteService.class);
 
@@ -42,6 +44,8 @@ public class VenteService {
         this.printerService = printerService;
     }
 
+    // -------------------- CRUD Ventes --------------------
+
     public Vente enregistrerVente(Vente vente) {
         return venteRepository.save(vente);
     }
@@ -51,9 +55,7 @@ public class VenteService {
     }
 
     public void deleteVentesByIds(List<Long> ids) {
-        for (Long id : ids) {
-            deleteVente(id);
-        }
+        for (Long id : ids) deleteVente(id);
     }
 
     public void deleteVenteWithStockRestore(Long id) {
@@ -66,16 +68,16 @@ public class VenteService {
 
         for (Produit produit : produitsVendus) {
             Long produitId = produit.getId();
-
             Stock stock = stockRepository.findByBoutiqueIdAndProduitId(boutiqueId, produitId)
-                    .orElseThrow(() -> new RuntimeException("Stock introuvable pour le produit ID : " + produitId));
-
+                    .orElseThrow(() -> new RuntimeException("Stock introuvable pour produit ID : " + produitId));
             stock.setQuantity(stock.getQuantity() + quantiteVendue);
             stockService.saveStock(stock);
         }
 
         venteRepository.deleteById(id);
     }
+
+    // -------------------- Enregistrement Ventes Multiples --------------------
 
     public List<Vente> enregistrerVentesMultiples(Vente venteRequest) {
         List<Vente> ventesEnregistrees = new ArrayList<>();
@@ -113,17 +115,20 @@ public class VenteService {
         // ---- Print receipt on network printer ----
         try {
             String receipt = generateReceiptText(ventesEnregistrees);
-            printerService.printLabel(ventesEnregistrees.get(0).getProduits().get(0).getName(), receipt);
+            printReceiptToNetwork(receipt);
             logger.info("Reçu imprimé sur imprimante réseau pour " + ventesEnregistrees.get(0).getProduits().get(0).getName());
         } catch (Exception e) {
-            logger.error("Erreur impression reçu réseau: " + e.getMessage());
+            logger.error("Erreur impression reçu réseau: " + e.getMessage(), e);
         }
 
         return ventesEnregistrees;
     }
 
+    // -------------------- Vente Produit Fini --------------------
+
     public Vente vendreProduitFini(VenteProduitFiniRequest request) {
         Long boutiqueId = request.getBoutiqueId();
+
         Stock stockBouteille = stockRepository.findByBoutiqueIdAndProduitId(boutiqueId, request.getBouteilleId())
                 .orElseThrow(() -> new RuntimeException("Stock de bouteille introuvable"));
         Stock stockHuile = stockRepository.findByBoutiqueIdAndProduitId(boutiqueId, request.getHuileId())
@@ -160,118 +165,111 @@ public class VenteService {
 
         Vente savedVente = venteRepository.save(vente);
 
-        // ---- Print ticket on local printer ----
+        // ---- Print ticket local ----
         try {
             String ticketText = generateProduitFiniReceipt(savedVente, request.getTaille(), huileNeeded, alcoolNeeded);
-            printReceipt(ticketText);
+            printReceiptLocal(ticketText);
             logger.info("Ticket imprimé localement pour " + stockHuile.getProduit().getName());
         } catch (Exception e) {
-            logger.error("Erreur impression ticket local: " + e.getMessage());
+            logger.error("Erreur impression ticket local: " + e.getMessage(), e);
         }
 
-        // ---- Print receipt on network printer ----
+        // ---- Print receipt network ----
         try {
             String receiptText = generateReceiptText(List.of(savedVente));
-            printerService.printLabel(stockHuile.getProduit().getName(), receiptText);
+            printReceiptToNetwork(receiptText);
             logger.info("Reçu imprimé sur imprimante réseau pour " + stockHuile.getProduit().getName());
         } catch (Exception e) {
-            logger.error("Erreur impression reçu réseau: " + e.getMessage());
+            logger.error("Erreur impression reçu réseau: " + e.getMessage(), e);
         }
 
         return savedVente;
     }
 
-    public List<Vente> getAllVentes() {
-        return venteRepository.findAll();
-    }
+    // -------------------- Getters --------------------
 
-    public Vente getVenteById(Long id) {
-        return venteRepository.findById(id).orElse(null);
-    }
+    public List<Vente> getAllVentes() { return venteRepository.findAll(); }
 
-    public List<Vente> getVentesByBoutique(Long boutiqueId) {
-        return venteRepository.findByBoutiqueId(boutiqueId);
-    }
+    public Vente getVenteById(Long id) { return venteRepository.findById(id).orElse(null); }
 
-    public static Logger getLogger() {
-        return logger;
-    }
+    public List<Vente> getVentesByBoutique(Long boutiqueId) { return venteRepository.findByBoutiqueId(boutiqueId); }
 
-    // ---------------- Receipt / Ticket methods ----------------
+    public static Logger getLogger() { return logger; }
+
+    // -------------------- Receipt / Ticket Methods --------------------
 
     private String generateReceiptText(List<Vente> ventes) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" ***** Future Fragrance  Recu De Vente *****\n");
-        sb.append("     ***********************************\n\n");
+        sb.append("***** Future Fragrance *****\n");
+        sb.append("      Reçu De Vente\n");
+        sb.append("-------------------------------\n");
 
         String dateStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        sb.append("Date : ").append(dateStr).append("\n");
-        sb.append("------------------------------------------------\n");
-        sb.append(String.format("%-12s %8s %12s\n", "Produit", "Qte", "Total"));
-        sb.append("------------------------------------------------\n");
-        double total = 0;
+        sb.append("Date: ").append(dateStr).append("\n");
+        sb.append("-------------------------------\n");
 
+        sb.append(String.format("%-16s %3s %7s\n", "Produit", "Qte", "Total"));
+        sb.append("-------------------------------\n");
+
+        double total = 0;
         for (Vente vente : ventes) {
             Produit produit = vente.getProduits().get(0);
-            String nomProduit = produit.getName();
+            String nomProduit = truncateTSPL(produit.getName(), 16);
             int quantite = (int) vente.getQuantity();
             double montant = vente.getMontantTotal();
-
-            sb.append(String.format("%-12s %8d %13.2f\n", truncate(nomProduit, 12), quantite, montant));
+            sb.append(String.format("%-16s %3d %7.2f\n", nomProduit, quantite, montant));
             total += montant;
         }
 
-        sb.append("------------------------------------------------\n");
-        sb.append(String.format("%-16s %15.2f DH\n", "TOTAL:", total));
-        sb.append("------------------------------------------------\n");
-        sb.append("          Merci pour votre achat !\n");
-        sb.append("                 A bientot !\n");
+        sb.append("-------------------------------\n");
+        sb.append(String.format("%-16s %10.2f DH\n", "TOTAL:", total));
+        sb.append("-------------------------------\n");
+        sb.append("Merci pour votre achat !\n");
+        sb.append("A bientôt !\n");
 
         return sb.toString();
-    }
-
-    private String truncate(String input, int maxLength) {
-        return input.length() <= maxLength ? input : input.substring(0, maxLength - 1) + "…";
     }
 
     private String generateProduitFiniReceipt(Vente vente, String taille, double huileUsed, double alcoolUsed) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" ***** Future Fragrance  Recu De Vente *****\n");
-        sb.append("     ***********************************\n\n");
-        sb.append("Date : ").append(
-                vente.getDateVente().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
-        ).append("\n");
+        sb.append("***** Future Fragrance *****\n");
+        sb.append("      Reçu De Vente\n");
+        sb.append("-------------------------------\n");
 
-        sb.append("------------------------------------------------\n");
-        sb.append(String.format("%-12s \n", "Ingredient"));
+        sb.append("Date: ").append(vente.getDateVente().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))).append("\n");
+        sb.append("-------------------------------\n");
+        sb.append("Ingrédients:\n");
 
         for (Produit p : vente.getProduits()) {
-            String name = p.getName().toLowerCase();
-            if (name.contains("huile")) {
-                sb.append(String.format(" %6s\n", p.getName()));
-            }
+            sb.append(" - ").append(truncateTSPL(p.getName(), 16)).append("\n");
         }
-        sb.append("Taille : ").append(taille).append(" ml\n");
-        sb.append("------------------------------------------------\n");
-        sb.append(String.format("TOTAL : %.2f DH\n", vente.getMontantTotal()));
-        sb.append("------------------------------------------------\n");
-        sb.append("          Merci pour votre achat !\n");
-        sb.append("              A bientot !\n\n");
+
+        sb.append("Taille: ").append(taille).append(" ml\n");
+        sb.append("-------------------------------\n");
+        sb.append(String.format("TOTAL: %.2f DH\n", vente.getMontantTotal()));
+        sb.append("-------------------------------\n");
+        sb.append("Merci pour votre achat !\n");
+        sb.append("A bientôt !\n");
 
         return sb.toString();
     }
 
-    private void printReceipt(String receiptText) {
+    private String truncateTSPL(String input, int maxChars) {
+        if (input == null) return "";
+        if (input.length() <= maxChars) return input;
+        return input.substring(0, maxChars - 1) + "…";
+    }
+
+    private void printReceiptLocal(String receiptText) {
         try {
             PrintService printService = PrintServiceLookup.lookupDefaultPrintService();
-
             if (printService == null) {
                 System.out.println("No printer found.");
                 return;
             }
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            outputStream.write(receiptText.getBytes("UTF-8"));
+            outputStream.write(receiptText.getBytes(Charset.forName("CP850")));
 
             byte[] cutCommand = new byte[]{0x1D, 'V', 66, 0};
             outputStream.write(cutCommand);
@@ -283,5 +281,26 @@ public class VenteService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void printReceiptToNetwork(String receiptText) throws IOException {
+        String[] lines = receiptText.split("\n");
+        StringBuilder tspl = new StringBuilder();
+        tspl.append("SIZE 80 mm,50 mm\n");
+        tspl.append("GAP 3 mm,0\n");
+        tspl.append("DENSITY 8\n");
+        tspl.append("SPEED 4\n");
+        tspl.append("CLS\n");
+
+        int y = 20;
+        for (String line : lines) {
+            tspl.append(String.format("TEXT 10,%d,\"3\",0,1,1,\"%s\"\n", y, line));
+            y += 20;
+        }
+
+        tspl.append("PRINT 1,1\n");
+        tspl.append("\u001D" + "V" + "B" + "\0"); // Cut paper
+
+        printerService.sendToPrinter(tspl.toString());
     }
 }
