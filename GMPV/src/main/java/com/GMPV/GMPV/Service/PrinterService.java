@@ -51,10 +51,10 @@ public class PrinterService {
     /**
      * Open a socket and send raw TSPL commands to the printer.
      */
-    public  void sendToPrinter(String tsplData) throws IOException {
+    private void sendToPrinter(String tsplData) throws IOException {
         try (Socket socket = new Socket()) {
             // timeout helps if printer is unreachable
-            socket.connect(new InetSocketAddress(printerIp, printerPort), 6000);
+            socket.connect(new InetSocketAddress(printerIp, printerPort), 3000);
             try (OutputStream out = socket.getOutputStream()) {
                 out.write(tsplData.getBytes(StandardCharsets.US_ASCII));
                 out.flush();
