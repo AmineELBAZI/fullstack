@@ -133,7 +133,7 @@ const MonStock = () => {
           </div>
         </div>
       </div>
-
+ 
 {/* Search + Seuil de stock in same row */}
 <div className="flex flex-col sm:flex-row items-center gap-4 mb-6">
   {/* Search bar */}
