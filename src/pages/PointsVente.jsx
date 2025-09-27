@@ -172,6 +172,7 @@ const PointsVente = () => {
       toast.error("Veuillez saisir une quantité valide.");
       return;
     }
+    
 
     if (selectedProduitQuantity > selectedProduit.quantityStock) {
       toast.error("Quantité demandée supérieure au stock disponible.");
